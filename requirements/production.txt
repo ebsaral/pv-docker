@@ -3,4 +3,3 @@ kombu==4.3.0
 redis==3.2.0
 astral==1.10.1
 python-dateutil==2.8.0
-pytest==4.3.0

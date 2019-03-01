@@ -1,20 +1,21 @@
 import csv
-import datetime
 from io import StringIO
 import redis
 
 from flask import Flask, render_template, make_response
 from flask import request
 
-from utils import get_sun, write_row_by_key
-from managers import PVCalculationManager
+from common.utils import *
+from pv_app.managers import PVCalculationManager
+
 
 app = Flask(__name__)
 
+
 @app.route('/', methods=['POST', 'GET'])
 def main():
-    r = redis.Redis(host='redis', port=6379, db=0)
-    keys = sorted(r.keys('test-*'))
+    r = redis.Redis(host=REDIS_HOST, port=6379, db=0)
+    keys = sorted(r.keys(f'{PREFIX}*'))
     sun = get_sun()
 
     if request.method == 'POST':
@@ -35,4 +36,4 @@ def main():
     return render_template('pv.html', counter=counter)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=DEBUG)

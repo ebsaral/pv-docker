@@ -1,0 +1,17 @@
+FROM python:3.6-alpine
+
+WORKDIR /app
+
+ARG req_file
+
+COPY ./common /app/common
+COPY ./consumer_app /app/consumer_app
+COPY ./requirements /app/requirements
+
+RUN python -m pip install --upgrade pip
+RUN python -m pip install -r "./requirements/$req_file" --no-cache-dir
+
+ENV PYTHONPATH /app
+ENV PYTHONUNBUFFERED 1
+
+CMD python ./consumer_app/consumer.py

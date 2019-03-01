@@ -1,8 +1,8 @@
 from flask import Flask, render_template
 from flask import request
 
-from consts import RABBIT_URL
-from utils import populate_data, format_data
+from common.consts import RABBIT_URL, QUEUE_NAME, EXCHANGE_NAME, ROUTING_KEY, DEBUG
+from common.utils import populate_data, format_data
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'X1234567!'
@@ -10,8 +10,8 @@ app.config['SECRET_KEY'] = 'X1234567!'
 from kombu import Connection, Exchange, Queue
 from kombu.mixins import ConsumerProducerMixin
 
-exchange = Exchange("test", type="direct")
-queues = [Queue(name="test", exchange=exchange, routing_key="MM")]
+exchange = Exchange(EXCHANGE_NAME, type="direct")
+queues = [Queue(name=QUEUE_NAME, exchange=exchange, routing_key=ROUTING_KEY)]
 
 
 class Worker(ConsumerProducerMixin):
@@ -20,7 +20,7 @@ class Worker(ConsumerProducerMixin):
         self.queues = queues
 
     def get_consumers(self, Consumer, channel):
-        return [Consumer(queues=Queue('foo'),
+        return [Consumer(queues=Queue(QUEUE_NAME),
                          on_message=self.handle_message,
                          accept='application/json',
                          prefetch_count=10)]
@@ -29,7 +29,7 @@ class Worker(ConsumerProducerMixin):
         self.producer.publish(
             message,
             exchange=exchange,
-            routing_key='MM',
+            routing_key=ROUTING_KEY,
             retry=True,
         )
 
@@ -48,4 +48,4 @@ def main():
     return render_template('index.html', counter=counter)
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', debug=True)
+    app.run('0.0.0.0', debug=DEBUG)

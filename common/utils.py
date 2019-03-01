@@ -5,7 +5,8 @@ import random
 from astral import Astral
 from pytz import timezone
 
-PREFIX = 'test-'
+from common.consts import *
+
 
 def get_datetime():
     return datetime.datetime.now().astimezone(timezone('utc')).replace(
@@ -61,9 +62,8 @@ def get_datetime_from_unix_timestamp(timestamp):
 
 def get_sun():
     astral = Astral()
-    city_name = 'Berlin'
     astral.solar_depression = 'civil'
-    city = astral[city_name]
+    city = astral[CITY_NAME]
     datetime_value = datetime.datetime.today()
     sun = city.sun(date=datetime_value.date(), local=True)
     return sun

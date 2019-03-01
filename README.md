@@ -3,7 +3,11 @@ PV simulator example
 
 ## Local Simulation Environment
 
+Change consts.py file if you need to update a setting.
+
 `docker-compose up`
+
+Wait until RabbitMQ Server is running.
 
 `http://localhost:5000` -> Where you hit the populate button, and simulate consumption throughout the day. Send messages to RabbitMQ broker. Same page gives you the total number of data populated after hitting the button.
 

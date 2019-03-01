@@ -1,0 +1,2 @@
+-r production.txt
+pytest==4.3.0
