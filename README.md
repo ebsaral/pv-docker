@@ -75,6 +75,6 @@ This project can easily be construct into three-microservices structure: Meter A
 - Write tests for the entry points and cover more code base.
 - Construct environment variables in a better way and seperate test environment variables
 - Declare volumes for the containers in dockerfiles
-
+- Dockerize the app
 
 Emin Bugra Saral (c) 2019
