@@ -5,6 +5,10 @@ PV simulator example
 
 [![CircleCI](https://circleci.com/gh/ebsaral/pv-docker/tree/master.svg?style=svg)](https://circleci.com/gh/ebsaral/pv-docker/tree/master)
 
+## Diagram
+
+`Meter (Flask)` --> `Broker (RabbitMQ)` --> `Consumer (Python)` --> `PV Simulator (Flask)` --> `CSV (File)`
+
 ## Local Simulation Environment
 
 If you want to change settings, please have a look at `common/consts.py` and `docker-compose.yml`
