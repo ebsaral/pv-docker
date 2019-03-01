@@ -1,6 +1,8 @@
 # pv-docker
 PV simulator example
 
+[![CodeCov](https://codecov.io/gh/ebsaral/pv-docker/branch/master/graph/badge.svg)](https://codecov.io/gh/ebsaral/pv-docker)
+
 [![CircleCI](https://circleci.com/gh/ebsaral/pv-docker/tree/master.svg?style=svg)](https://circleci.com/gh/ebsaral/pv-docker/tree/master)
 
 ## Local Simulation Environment

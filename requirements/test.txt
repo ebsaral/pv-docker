@@ -1,2 +1,4 @@
 -r production.txt
 pytest==4.3.0
+codecov==2.0.15
+pytest-cov==2.6.1
