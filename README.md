@@ -29,6 +29,18 @@ When the messages get pushed to RabbitMQ, another consumer app listens to the qu
 
 ### PV Service
 
+The applied formula: `E = A * r  * H * PR`
+
+E: Energy (kWh)
+
+A: Total solar panel area (m2)
+
+r: Solar panel yield of efficiency
+
+H: Annual average solar radiation on tilted panels (meter input)
+
+PR: Performance ratio, coefficient for losses (default: .75)
+
 `http://localhost:5001` -> Where you retrieve messages from Redis (cache method) and export as csv after applying PV simulator manager (`pv_app.managers.PVCalculationManager`). Same page displays the number of items waiting in Redis database to be exported if you click on refresh. After the export, the redis database gets flushed. 
 
 ### RabbitMQ Service
