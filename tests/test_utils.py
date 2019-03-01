@@ -1,4 +1,11 @@
+from unittest import mock
+
+import pytest
+
+from astral import Location
+
 from common.utils import *
+from pv_app.managers import PVCalculationManager
 
 
 def test_get_datetime():
@@ -70,3 +77,127 @@ def test_get_datetime_from_unix_timestamp():
     timestamp = calendar.timegm(expected_dt.timetuple())
     dt = get_datetime_from_unix_timestamp(timestamp)
     assert expected_dt == dt
+
+def test_get_astral():
+    astral = get_astral()
+    assert isinstance(astral, Astral)
+
+def test_get_astral_city():
+    astral = get_astral()
+    assert isinstance(astral, Astral)
+    city = get_astral_city(astral)
+    assert isinstance(city, Location)
+    assert CITY_NAME.lower() in city.name.lower()
+
+
+@pytest.mark.freeze_time('2019-03-01')
+def test_get_sun():
+    sun = get_sun()
+    assert type(sun) == dict
+
+    sunset = sun['dawn']
+    sunset = sunset.replace(tzinfo=None)
+    sunset_expected = datetime.datetime(2019, 2, 28, 6, 21, 25)
+
+    assert sunset == sunset_expected
+
+    sunrise = sun['sunrise']
+    sunrise = sunrise.replace(tzinfo=None)
+    sunrise_expected = datetime.datetime(2019, 2, 28, 6, 55, 48)
+
+    assert sunrise == sunrise_expected
+
+
+def test_get_values_by_key(monkeypatch):
+    redis = mock.Mock()
+
+    def redis_mock(key):
+        return b'1234'
+    monkeypatch.setattr(redis, 'get', redis_mock)
+
+    dt = get_datetime()
+    ts = get_timestamp(dt)
+
+    timestamp, value = get_values_by_key(redis, f"{ts}".encode('utf8'))
+
+    assert timestamp == ts
+    assert value == 1234
+
+
+def test_construct_row():
+    row = construct_row(1, 2, 3, 4, 5, 6)
+    assert  row == [1, 2, 3, 4, 5, 6]
+
+def test_get_manager():
+    redis = mock.Mock()
+    sun = get_sun()
+    key = f"{PREFIX}123456".encode('utf8')
+
+    def redis_get_mock(key):
+        return b'1234'
+
+    redis.get = redis_get_mock
+    manager = get_manager(redis, key, sun)
+    assert isinstance(manager, PVCalculationManager)
+
+    assert manager.timestamp == 123456
+    assert manager.value == 1234
+
+
+@pytest.mark.freeze_time('2019-03-01 12:00:00')
+def test_write_row_by_key():
+    manager = mock.Mock()
+    cw = mock.Mock()
+    ts = str(get_timestamp(get_datetime()))
+    value = 1234
+
+    def cv_mock(row):
+        return True
+
+    def get_pv_value_mock(is_mwh):
+        return 2345
+
+    def get_total_mock(is_mwh):
+        return 1000
+
+    def format_date(format):
+        return get_datetime().strftime(format)
+
+    cw.writerow = cv_mock
+    manager.get_total = get_total_mock
+    manager.get_pv_value = get_pv_value_mock
+    manager.datetime_value.strftime = format_date
+    manager.timestamp = int(ts)
+    manager.daylight = True
+    manager.value = value
+
+    row = write_row_by_key(manager, cw)
+    date = get_datetime().strftime("%m/%d/%Y, %H:%M:%S")
+    expected_row = [int(ts), date, True, 1234, 2345, 1000]
+
+    assert row == expected_row
+
+@pytest.mark.freeze_time('2019-03-01 12:00:00')
+def test_populate_data(monkeypatch, mocker):
+
+    dt = get_datetime()
+    value = 10000
+
+    def get_random_watt_value_mock():
+        return value
+
+    mocker.patch('common.utils.get_random_watt_value',
+                 get_random_watt_value_mock)
+
+    data = populate_data(10, 11, 20, 20)
+    begin, end = get_begin_and_end_datetime(dt)
+
+    expected_data = []
+    current_time = begin.replace(hour=10)
+    while current_time.hour >= 10 and current_time.hour < 11:
+        timestamp = get_timestamp(current_time)
+        expected_data.append((timestamp, value))
+        current_time = randomly_increase_datetime_by_seconds(
+            current_time, seconds=20)
+
+    assert data == expected_data

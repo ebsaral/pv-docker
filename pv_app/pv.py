@@ -24,7 +24,9 @@ def main():
         cw.writerow(['timestamp', 'date', 'is_daytime',
                      'value', 'pv_value', 'total_energy'])
         for key in keys:
-            write_row_by_key(PVCalculationManager, r, cw, key, sun)
+            manager = get_manager(r, key, sun)
+            write_row_by_key(manager, cw)
+
         output = make_response(si.getvalue())
         output.headers[
             "Content-Disposition"] = "attachment; filename=export.csv"

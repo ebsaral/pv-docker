@@ -38,14 +38,13 @@ def populate_data(start_hour=DEFAULT_START_HOUR,
         today_datetime
     )
 
-    jump = random.randint(jump_min, jump_max)
-
     data = []
     current_time = today_begin_datetime.replace(hour=start_hour)
     while current_time.hour >= start_hour and current_time.hour < end_hour:
         timestamp = get_timestamp(current_time)
         value = get_random_watt_value()
         data.append((timestamp, value))
+        jump = random.randint(jump_min, jump_max)
         current_time = randomly_increase_datetime_by_seconds(
             current_time, seconds=jump)
 
@@ -63,11 +62,19 @@ def get_datetime_from_unix_timestamp(timestamp):
     return datetime.datetime.fromtimestamp(timestamp).astimezone(
         timezone('utc'))
 
-def get_sun():
+def get_astral():
     astral = Astral()
     astral.solar_depression = 'civil'
+    return astral
+
+def get_astral_city(astral):
     city = astral[CITY_NAME]
-    datetime_value = datetime.datetime.today()
+    return city
+
+def get_sun():
+    astral = get_astral()
+    city = get_astral_city(astral)
+    datetime_value = get_datetime()
     sun = city.sun(date=datetime_value.date(), local=True)
     return sun
 
@@ -76,11 +83,21 @@ def get_values_by_key(redis, key):
     value = int(redis.get(key).decode('utf8'))
     return timestamp, value
 
-def write_row_by_key(manager, redis, cw, key, sun):
+def construct_row(timestamp, date, is_daytime, value, pv_value, total):
+    return [timestamp, date, is_daytime, value, pv_value, total]
+
+def get_manager(redis, key, sun):
+    from pv_app.managers import PVCalculationManager
     timestamp, value = get_values_by_key(redis, key)
-    pv_manager = manager(timestamp, value, sun)
+    pv_manager = PVCalculationManager(timestamp, value, sun)
+    return pv_manager
+
+def write_row_by_key(pv_manager, cw):
     pv_value = pv_manager.get_pv_value(is_mwh=False)
     total = pv_manager.get_total(is_mwh=False)
     date = pv_manager.datetime_value.strftime("%m/%d/%Y, %H:%M:%S")
     is_daytime = pv_manager.daylight
-    cw.writerow([timestamp, date, is_daytime, value, pv_value, total])
+    row = construct_row(pv_manager.timestamp, date, is_daytime,
+                        pv_manager.value, pv_value, total)
+    cw.writerow(row)
+    return row
