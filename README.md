@@ -69,3 +69,10 @@ or
 ## Note
 
 This project can easily be construct into three-microservices structure: Meter App, PV App (Consumer + Export) and RabbitMQ app.
+
+## Improvements to do
+
+- Write tests for the entry points and cover more code base.
+- Construct environment variables in a better way and seperate test environment variables
+
+Emin Bugra Saral (c) 2019
