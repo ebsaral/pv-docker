@@ -1,0 +1,1 @@
+RABBIT_URL = "amqp://emin:123456@rabbitmq:5672/test"

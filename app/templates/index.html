@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Meter Data</title>
+</head>
+<body>
+<p>
+    <form method="post">
+    <input type=submit name="submit_button" value="Populate">
+    </form>
+</p>
+
+{% if counter %}
+<p>Total Record Number: {{ counter }}</p>
+{% endif %}
+</body>
+</html>
