@@ -29,7 +29,11 @@ jobs:
           command: |
             . venv/bin/activate
             pytest --cov=./
-            & codecov
+
+      - run:
+        name: codecov
+        command: |
+          codecov
 
       - store_artifacts:
           path: test-reports
