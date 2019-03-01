@@ -29,7 +29,10 @@ def get_begin_and_end_datetime(dt):
         dt.date(), datetime.time.max)
     return min_datetime, max_datetime
 
-def populate_data(start_hour=4, end_hour=19, jump_min=20, jump_max=40):
+def populate_data(start_hour=DEFAULT_START_HOUR,
+                  end_hour=DEFAULT_END_HOUR,
+                  jump_min=DEFAULT_SHIFT_TIME_MIN,
+                  jump_max=DEFAULT_SHIFT_TIME_MAX):
     today_datetime = get_datetime()
     today_begin_datetime, today_end_datetime = get_begin_and_end_datetime(
         today_datetime
