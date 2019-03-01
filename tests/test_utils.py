@@ -135,7 +135,7 @@ def test_get_manager():
     assert manager.value == 1234
 
 
-@pytest.mark.freeze_time('2019-03-01 12:00:00+0000')
+@pytest.mark.freeze_time('2019-03-01 12:00:00+0200')
 def test_write_row_by_key():
     manager = mock.Mock()
     cw = mock.Mock()
@@ -168,8 +168,8 @@ def test_write_row_by_key():
 
     assert row == expected_row
 
-@pytest.mark.freeze_time('2019-03-01 12:00:00+0000')
-def test_populate_data(monkeypatch, mocker):
+@pytest.mark.freeze_time('2019-03-01 12:00:00+0200')
+def test_populate_data(mocker):
 
     dt = get_datetime()
     value = 10000
