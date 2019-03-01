@@ -1,4 +1,4 @@
-FROM tiangolo/meinheld-gunicorn-flask:python3.7
+FROM python:3.6-alpine
 
 WORKDIR /app
 
@@ -8,6 +8,10 @@ COPY ./common /app/common
 COPY ./pv_app /app/pv_app
 COPY ./meter_app /app/meter_app
 COPY ./requirements /app/requirements
+COPY ./tests /app/tests
+
+RUN rm -rf /app/tests/__pycache__
+RUN rm -rf /app/__pycache__
 
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -r "./requirements/$req_file" --no-cache-dir

@@ -42,7 +42,7 @@ services:
   test:
     build:
       context: .
-      dockerfile: Dockerfile.flask
+      dockerfile: Dockerfile.test
       args:
         req_file: "test.txt"
     command: pytest --cov=./
