@@ -1,6 +1,8 @@
 # pv-docker
 PV simulator example
 
+[![CircleCI](https://circleci.com/gh/ebsaral/pv-docker/tree/master.svg?style=svg)](https://circleci.com/gh/ebsaral/pv-docker/tree/master)
+
 ## Local Simulation Environment
 
 Change consts.py file if you need to update a setting.
