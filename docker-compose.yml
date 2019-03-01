@@ -45,3 +45,4 @@ services:
       dockerfile: Dockerfile.flask
       args:
         req_file: "test.txt"
+    command: pytest --cov=./

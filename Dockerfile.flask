@@ -8,6 +8,7 @@ COPY ./common /app/common
 COPY ./pv_app /app/pv_app
 COPY ./meter_app /app/meter_app
 COPY ./requirements /app/requirements
+COPY ./tests /app/tests
 
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -r "./requirements/$req_file" --no-cache-dir
