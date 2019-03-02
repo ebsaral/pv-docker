@@ -50,7 +50,9 @@ PR: Performance ratio, coefficient for losses (default: .75)
 
 ### Consumer Service
 
-When the messages get pushed to RabbitMQ, another consumer app listens to the queue and writes the collected data into Redis. Check the container `consumer`
+When the messages get pushed to RabbitMQ, another consumer app listens to the queue and writes the collected data into Redis. The reason I am writing data to redis is to handle the csv operations in bulk later. **Writing the redis was an optional structure decision. It'not necessarry.**
+
+Check the container `consumer`
 
 
 ### RabbitMQ Service
