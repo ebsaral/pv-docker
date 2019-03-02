@@ -7,18 +7,18 @@ from common.utils import *
 
 def get_manager_and_timestamp_for_test():
     ts = get_timestamp(get_datetime())
-    sun = get_sun()
-    manager = PVCalculationManager(timestamp=ts, value=1000, sun=sun)
+    manager = PVCalculationManager(timestamp=ts, value=1000, sun=get_sun())
     return manager, ts
 
 
-@pytest.mark.freeze_time('2019-03-01 12:00:00+0200')
+@pytest.mark.freeze_time('2019-09-01 12:00:00+0200')
 def test_pvcalculation_init_daylight_true():
     manager, ts = get_manager_and_timestamp_for_test()
 
     dt = get_datetime_from_unix_timestamp(ts)
 
     assert dt == get_datetime()
+    assert manager.datetime_value == dt
     assert manager.timestamp == ts
     assert manager.value == 1000
     assert manager.daylight == True

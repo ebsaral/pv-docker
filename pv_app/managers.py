@@ -1,7 +1,6 @@
 from datetime import date
-from pytz import timezone
 
-from common.utils import get_datetime_from_unix_timestamp
+from common.utils import *
 
 
 class PVCalculationManager():
@@ -14,6 +13,13 @@ class PVCalculationManager():
         self._panel_efficiency = None
         self._sun = sun
         self._set_daylight()
+
+    @classmethod
+    def create(cls, key):
+        timestamp, value = get_value_by_key(key)
+        date = get_datetime_from_unix_timestamp(timestamp)
+        pv_manager = cls(timestamp, value, get_sun(date))
+        return pv_manager
 
     def _set_daylight(self):
         """

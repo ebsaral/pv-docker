@@ -4,8 +4,21 @@ import pytest
 
 from astral import Location
 
-from common.utils import *
-from pv_app.managers import PVCalculationManager
+from ..utils import *
+
+
+def mock_redis(mocker):
+    redis = mock.Mock()
+
+    def redis_get_mock(key):
+        return b'1234'
+
+    def redis_keys_mock(reg):
+        return ['test1', 'test2']
+
+    redis.get = redis_get_mock
+    redis.keys = redis_keys_mock
+    mocker.patch('common.utils.redis_conn', redis)
 
 
 def test_get_datetime():
@@ -78,72 +91,49 @@ def test_get_datetime_from_unix_timestamp():
     dt = get_datetime_from_unix_timestamp(timestamp)
     assert expected_dt == dt
 
-def test_get_astral():
-    astral = get_astral()
-    assert isinstance(astral, Astral)
 
-def test_get_astral_city():
-    astral = get_astral()
-    assert isinstance(astral, Astral)
-    city = get_astral_city(astral)
+def test_astral():
+    assert isinstance(ASTRAL, Astral)
+
+
+def test_astral_city():
+    city = ASTRAL_CITY
     assert isinstance(city, Location)
     assert CITY_NAME.lower() in city.name.lower()
 
 
 @pytest.mark.freeze_time('2019-03-01')
-def test_get_sun():
+def test_astral_sun():
     sun = get_sun()
     assert type(sun) == dict
-
     assert 'dawn' in sun
     assert 'sunrise' in sun
 
 
-def test_get_values_by_key(monkeypatch):
-    redis = mock.Mock()
-
-    def redis_mock(key):
-        return b'1234'
-    monkeypatch.setattr(redis, 'get', redis_mock)
+def test_get_value_by_key(mocker):
+    mock_redis(mocker)
 
     dt = get_datetime()
     ts = get_timestamp(dt)
 
-    timestamp, value = get_values_by_key(redis, f"{ts}".encode('utf8'))
+    timestamp, value = get_value_by_key(f"{ts}".encode('utf8'))
 
     assert timestamp == ts
     assert value == 1234
 
 
-def test_construct_row():
-    row = construct_row(1, 2, 3, 4, 5, 6)
-    assert  row == [1, 2, 3, 4, 5, 6]
-
-def test_get_manager():
-    redis = mock.Mock()
-    sun = get_sun()
-    key = f"{PREFIX}123456".encode('utf8')
-
-    def redis_get_mock(key):
-        return b'1234'
-
-    redis.get = redis_get_mock
-    manager = get_manager(redis, key, sun)
-    assert isinstance(manager, PVCalculationManager)
-
-    assert manager.timestamp == 123456
-    assert manager.value == 1234
+def test_get_csv_fields():
+    expected_fields = ['timestamp', 'date', 'is_daytime', 'value',
+                       'pv_value', 'total_energy']
+    fields = get_csv_fields()
+    assert  expected_fields == fields
 
 
 @pytest.mark.freeze_time('2019-03-01 12:00:00+0200')
-def test_write_row_by_key():
+def test_get_csv_data():
     manager = mock.Mock()
-    cw = mock.Mock()
     ts = str(get_timestamp(get_datetime()))
     value = 1234
-
-    def cv_mock(row):
-        return True
 
     def get_pv_value_mock(is_mwh):
         return 2345
@@ -154,19 +144,26 @@ def test_write_row_by_key():
     def format_date(format):
         return get_datetime().strftime(format)
 
-    cw.writerow = cv_mock
     manager.get_total = get_total_mock
     manager.get_pv_value = get_pv_value_mock
     manager.datetime_value.strftime = format_date
     manager.timestamp = int(ts)
     manager.daylight = True
     manager.value = value
-
-    row = write_row_by_key(manager, cw)
     date = get_datetime().strftime("%m/%d/%Y, %H:%M:%S")
-    expected_row = [int(ts), date, True, 1234, 2345, 1000]
+    data = get_csv_data(manager)
 
-    assert row == expected_row
+    expected_data = {
+        'timestamp': int(ts),
+        'date': date,
+        'is_daytime': True,
+        'value': value,
+        'pv_value': 2345,
+        'total_energy': 1000
+    }
+
+    assert data == expected_data
+
 
 @pytest.mark.freeze_time('2019-03-01 12:00:00+0200')
 def test_populate_data(mocker):
@@ -180,7 +177,7 @@ def test_populate_data(mocker):
     mocker.patch('common.utils.get_random_watt_value',
                  get_random_watt_value_mock)
 
-    data = populate_data(10, 11, 20, 20)
+    data = list(get_populated_data(10, 11, 20, 20))
     begin, end = get_begin_and_end_datetime(dt)
 
     expected_data = []
@@ -192,3 +189,11 @@ def test_populate_data(mocker):
             current_time, seconds=20)
 
     assert data == expected_data
+
+
+def test_get_redis_keys(mocker):
+    mock_redis(mocker)
+    keys = get_redis_keys()
+    expected_keys = ['test1', 'test2']
+
+    assert keys == expected_keys

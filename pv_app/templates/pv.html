@@ -3,16 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <title>PV Exporter</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
 <p>
-    <form enctype=multipart/form-data method="post">
-    <input type=submit value="Export">
-    <a href="/">Refresh</a>
-    </form>
+    <a href="/export" target="_blank">Export All Data</a> | <a class="flush" href="/flush">Flush (Empty) Redis DB</a>
 </p>
-{% if counter %}
-<p>Total Record Number: {{ counter }}</p>
-{% endif %}
+
+<p>Total Record Number: <span id="counter">{{ counter }}</span></p>
+
+<p>The number gets updated automatically every second.</p>
+
+<script>
+    $(document).ready(function(){
+        function refresh() {
+            $.ajax({
+                type: "GET",
+                url: "/count",
+                dataType: "json",
+                success: function(data){
+                    console.log(data);
+                    $("#counter").html(data.count);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    console.log(XMLHttpRequest);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+        }
+        setInterval(refresh, 1000);
+
+        $("a.flush").click(function(event) {
+            event.preventDefault();
+            $.ajax({
+                url: $(this).attr('href'),
+                success: function(response) {
+                    console.log(response);
+                    alert('Redis Flush Success')
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    console.log(XMLHttpRequest);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+        });
+    });
+</script>
+
 </body>
 </html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+    <title>Meter Data</title>
+
+    <script>
+        $( function() {
+            $( "#datepicker" ).datepicker({
+                changeMonth: true,
+                changeYear: true
+            });
+        } );
+    </script>
+</head>
+<body>
+<p>
+    <form method="post">
+    Date: <input type="text" name="date" id="datepicker">
+    <input type=submit name="submit_button" value="Populate">
+    </form>
+</p>
+
+{% if counter %}
+<p>Total Populated Record Number: {{ counter }}</p>
+{% endif %}
+</body>
+
+{%  if data %}
+<p> Generated data for the date {{ now.strftime('%Y-%m-%d') }}</p>
+
+<table style="width:80%">
+<tr>
+    <th>Timestamp</th>
+    <th>Value</th>
+</tr>
+{% for ts, v in data %}
+<tr>
+    <td>{{ ts }}</td>
+    <td>{{ v }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+</html>

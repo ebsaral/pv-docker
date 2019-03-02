@@ -19,17 +19,16 @@ If you want to change settings, please have a look at `common/consts.py` and `do
 
 or specifically:
 
-`docker-compose up [rabbitmq|consumer|redis|meter|pv]`
+`docker-compose up [meter|pv]`
+
 
 Wait until RabbitMQ Server is running but that shouldn't be a problem as well. 
 
 ### Meter Service
 
-`http://localhost:5000`: Where you hit the populate button, and simulate consumption throughout the day. Send messages to RabbitMQ broker. Same page gives you the total number of data populated after hitting the button. Check the container: `meter`
+`http://localhost:5000` : Where you hit the populate button, and simulate consumption throughout the day. Send messages to RabbitMQ broker. Same page gives you the total number of data populated after hitting the button. Check the container: `meter`
 
-### Consumer Service
-
-When the messages get pushed to RabbitMQ, another consumer app listens to the queue and writes the collected data into Redis. Check the container `consumer`
+`docker-compose up meter`
 
 ### PV Service
 
@@ -45,7 +44,14 @@ H: Annual average solar radiation on tilted panels (meter input)
 
 PR: Performance ratio, coefficient for losses (default: .75)
 
-`http://localhost:5001` -> Where you retrieve messages from Redis (cache method) and export as csv after applying PV simulator manager (`pv_app.managers.PVCalculationManager`). Same page displays the number of items waiting in Redis database to be exported if you click on refresh. After the export, the redis database gets flushed. 
+`http://localhost:5001` : Where you retrieve messages from Redis (cache method) and export as csv after applying PV simulator manager (`pv_app.managers.PVCalculationManager`). Same page displays the number of items waiting in Redis database to be exported if you click on refresh. After the export, the redis database gets flushed. 
+
+`docker-compose up pv`
+
+### Consumer Service
+
+When the messages get pushed to RabbitMQ, another consumer app listens to the queue and writes the collected data into Redis. Check the container `consumer`
+
 
 ### RabbitMQ Service
 
@@ -76,5 +82,6 @@ This project can easily be construct into three-microservices structure: Meter A
 - Construct environment variables in a better way and seperate test environment variables
 - Declare volumes for the containers in dockerfiles
 - Dockerize the app
+
 
 Emin Bugra Saral (c) 2019

@@ -7,11 +7,12 @@ ARG req_file
 COPY ./common /app/common
 COPY ./pv_app /app/pv_app
 COPY ./meter_app /app/meter_app
-COPY ./requirements /app/requirements
-COPY ./tests /app/tests
+COPY ./consumer_app /app/consumer_app
 
-RUN rm -rf /app/tests/__pycache__
-RUN rm -rf /app/__pycache__
+COPY ./requirements /app/requirements
+
+RUN rm -rf /app/common/tests/__pycache__
+RUN rm -rf /app/pv_app/tests/__pycache__
 
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -r "./requirements/$req_file" --no-cache-dir

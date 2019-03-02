@@ -15,6 +15,9 @@ services:
       dockerfile: Dockerfile.consumer
       args:
         req_file: "production.txt"
+    depends_on:
+      - rabbitmq
+      - redis
   redis:
     image: redis:latest
     ports:
@@ -29,6 +32,9 @@ services:
       - MODULE_NAME=meter_app.meter
     ports:
       - '5000:80'
+    depends_on:
+      - rabbitmq
+      - consumer
   pv:
     build:
       context: .
@@ -39,6 +45,8 @@ services:
       - MODULE_NAME=pv_app.pv
     ports:
       - '5001:80'
+    depends_on:
+      - redis
   test:
     build:
       context: .
