@@ -44,7 +44,7 @@ H: Annual average solar radiation on tilted panels (meter input)
 
 PR: Performance ratio, coefficient for losses (default: .75)
 
-`http://localhost:5001` : Where you retrieve messages from Redis (cache method) and export as csv after applying PV simulator manager (`pv_app.managers.PVCalculationManager`). Same page displays the number of items waiting in Redis database to be exported if you click on refresh. You can flush the redis from the page. **Data could be pulled from RabbitMQ directly but we are using Redis as a middleware.**
+`http://localhost:5001` : Where you retrieve messages from Redis (cache method) and export as csv after applying PV simulator manager (`pv_app.managers.PVCalculationManager`). Same page displays the number of items waiting in Redis database to be exported if you click on refresh. You can flush the redis from the page. **Data could be pulled from RabbitMQ directly but we are using Redis as a bridge.**
 
 `docker-compose up pv`
 
