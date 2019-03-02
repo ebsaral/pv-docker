@@ -7,7 +7,7 @@ PV simulator example
 
 ## Diagram
 
-`Meter (Flask)` --> `Broker (RabbitMQ)` --> `Consumer (Python)` --> `PV Simulator (Flask)` --> `CSV (File)`
+`Meter (Flask)` --> `Broker (RabbitMQ)` --> `Consumer (Python)` --> `Redis` --> `PV Simulator (Flask)` --> `CSV (File)`
 
 ## Local Simulation Environment
 
