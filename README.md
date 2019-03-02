@@ -57,6 +57,7 @@ When the messages get pushed to RabbitMQ, another consumer app listens to the qu
 
 Works as the message broker. Check the container `rabbitmq`
 
+You can access the management page from `http://localhost:15672/` with the credentials `emin:123456`
 
 ## Tests
 
